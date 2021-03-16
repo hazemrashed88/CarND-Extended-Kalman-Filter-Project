@@ -35,6 +35,10 @@ class FusionEKF {
   // check whether the tracking toolbox was initialized or not (first measurement)
   bool is_initialized_;
 
+  // Hazem - set the acceleration noise components
+  int noise_ax = 9;
+  int noise_ay = 9;
+
   // previous timestamp
   long long previous_timestamp_;
 
