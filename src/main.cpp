@@ -126,7 +126,7 @@ int main() {
           estimate(3) = v2;
 
           estimations.push_back(estimate);
-          
+
           // // Hazem:
           // std::cout << "estimate= " << std::endl;
           // std::cout << estimate << std::endl;

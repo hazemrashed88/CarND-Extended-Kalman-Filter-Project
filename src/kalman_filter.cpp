@@ -59,13 +59,27 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
    * TODO: update the state by using Extended Kalman Filter equations
    */
+
+  // Create the h matrix 
+  VectorXd z_pred(3);
+  float px = x_[0];
+  float py = x_[1];
+  float vx = x_[2];
+  float vy = x_[3];
+  z_pred << sqrt(pow(px,2) + pow(py,2)),
+                atan(py / px),
+                (px * vx + py * vy) / (sqrt(pow(px,2) + pow(py,2)));
+
+
   // Hazem - Create object from Tools class
   Tools tools;
-  VectorXd z_pred = H_ * x_;
+  // VectorXd z_pred = h * x_;
   VectorXd y = z - z_pred;
   MatrixXd Hj = tools.CalculateJacobian(x_);
   MatrixXd Ht = Hj.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
+
+  MatrixXd S = Hj * P_ * Ht + R_;
+  // // MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
@@ -74,5 +88,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   x_ = x_ + (K * y);
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I - K * Hj) * P_;
 }

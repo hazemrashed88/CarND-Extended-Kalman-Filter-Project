@@ -3,6 +3,9 @@
 #include "Eigen/Dense"
 #include "tools.h"
 
+//Hazem
+#include <cmath>
+
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using std::cout;
@@ -40,19 +43,12 @@ FusionEKF::FusionEKF() {
   // create a 4D state vector, we don't know yet the values of the x state
   ekf_.x_ = VectorXd(4);
 
-  // // measurement matrix
-  // ekf_.H_ = MatrixXd(2, 4);
-  // ekf_.H_ << 1, 0, 0, 0,
-  //           0, 1, 0, 0;
-
   // the initial transition matrix F_
   ekf_.F_ = MatrixXd(4, 4);
   ekf_.F_ << 1, 0, 1, 0,
             0, 1, 0, 1,
             0, 0, 1, 0,
             0, 0, 0, 1;
-
-
 
 }
 
@@ -94,24 +90,22 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates
       //         and initialize state.
+      cout << "radar_1 = " << endl ;
+      // Convert position from polar to cartesian and initialize state
+      float ro = measurement_pack.raw_measurements_[0];
+      float phi = measurement_pack.raw_measurements_[1];
+      ekf_.x_ << ro * cos(phi),
+              ro * sin(phi),
+              0,
+              0;
 
-      // ekf_.R_ = R_radar_;
-
-      // // convert to polar
-      // VectorXd z_pred = VectorXd(3);
-      // float px = ekf_.x_[0];
-      // float py = ekf_.x_[1];
-      // float vx = ekf_.x_[2];
-      // float vy = ekf_.x_[3];
-      // z_pred << sqrt(pow(px,2) + pow(py,2)),
-      //           atan(py / px),
-      //           (px * vx + py * vy) / (sqrt(pow(px,2) + pow(py,2)));
+      ekf_.R_ = R_radar_;
 
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // TODO: Initialize state.
       ekf_.R_ = R_laser_;
-
+      cout << "laser_1 = " << endl ;
       // measurement matrix
       ekf_.H_ = MatrixXd(2, 4);
       ekf_.H_ << 1, 0, 0, 0,
@@ -165,13 +159,37 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    * - Use the sensor type to perform the update step.
    * - Update the state and covariance matrices.
    */
-
+  cout << "sensor_type = " << measurement_pack.sensor_type_ << endl ;
+  
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // TODO: Radar updates
-    // ekf_.UpdateEKF(measurement_pack.raw_measurements_);
+    
+    
+    cout << "radar" << endl;
+    float ro = measurement_pack.raw_measurements_[0];
+    float phi = measurement_pack.raw_measurements_[1];
+    ekf_.x_ << ro * cos(phi),
+              ro * sin(phi),
+              0,
+              0;
+    ekf_.R_ = R_radar_;
+
+
+
+    ekf_.UpdateEKF(measurement_pack.raw_measurements_);
 
   } else {
+    
+    
     // TODO: Laser updates
+    ekf_.R_ = R_laser_;
+    // measurement matrix
+    ekf_.H_ = MatrixXd(2, 4);
+    ekf_.H_ << 1, 0, 0, 0,
+              0, 1, 0, 0;
+
+
+
     ekf_.Update(measurement_pack.raw_measurements_);
 
   }
