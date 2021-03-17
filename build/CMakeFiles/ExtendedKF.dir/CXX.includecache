@@ -1030,14 +1030,6 @@ measurement_package.h
 tools.h
 /media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/tools.h
 
-/media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/kalman_filter.cpp
-kalman_filter.h
-/media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/kalman_filter.h
-iostream
--
-tools.h
-/media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/tools.h
-
 /media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/kalman_filter.h
 Eigen/Dense
 /media/hazem/Work/Projects/nanodegree_self_driving/extended_kalman_filter/CarND-Extended-Kalman-Filter-Project/src/Eigen/Dense

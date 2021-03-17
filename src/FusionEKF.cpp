@@ -24,7 +24,6 @@ FusionEKF::FusionEKF() {
   R_laser_ = MatrixXd(2, 2);
   R_radar_ = MatrixXd(3, 3);
   H_laser_ = MatrixXd(2, 4);
-  Hj_ = MatrixXd(3, 4);
 
   //measurement covariance matrix - laser
   R_laser_ << 0.0225, 0,
@@ -34,6 +33,10 @@ FusionEKF::FusionEKF() {
   R_radar_ << 0.09, 0, 0,
               0, 0.0009, 0,
               0, 0, 0.09;
+  
+  // measurement matrix - laser
+  H_laser_ << 1, 0, 0, 0,
+              0, 1, 0, 0;
 
   /**
    * TODO: Finish initializing the FusionEKF.
@@ -77,7 +80,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // set the process covariance matrix Q
     ekf_.Q_ = MatrixXd(4, 4);
-    
+
     // first measurement
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
@@ -90,7 +93,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates
       //         and initialize state.
-      cout << "radar_1 = " << endl ;
+      cout << " ******************************************* INITIALIZE RADAR ******************************************** " << std::endl;
+
       // Convert position from polar to cartesian and initialize state
       float ro = measurement_pack.raw_measurements_[0];
       float phi = measurement_pack.raw_measurements_[1];
@@ -103,13 +107,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+
+      cout << " ******************************************* INITIALIZE LASER ******************************************** " << std::endl;
       // TODO: Initialize state.
       ekf_.R_ = R_laser_;
-      cout << "laser_1 = " << endl ;
-      // measurement matrix
-      ekf_.H_ = MatrixXd(2, 4);
-      ekf_.H_ << 1, 0, 0, 0,
-                0, 1, 0, 0;
 
     }
 
@@ -159,41 +160,34 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    * - Use the sensor type to perform the update step.
    * - Update the state and covariance matrices.
    */
-  cout << "sensor_type = " << measurement_pack.sensor_type_ << endl ;
-  
+
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // TODO: Radar updates
-    
-    
-    cout << "radar" << endl;
-    float ro = measurement_pack.raw_measurements_[0];
-    float phi = measurement_pack.raw_measurements_[1];
-    ekf_.x_ << ro * cos(phi),
-              ro * sin(phi),
-              0,
-              0;
+
+    // Update R
     ekf_.R_ = R_radar_;
 
+    // Update H with jacobian
+    ekf_.H_ = tools.CalculateJacobian(ekf_.x_);
 
-
+    // Call Radar updated function
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
 
   } else {
-    
-    
     // TODO: Laser updates
+
+    // Update R
     ekf_.R_ = R_laser_;
-    // measurement matrix
-    ekf_.H_ = MatrixXd(2, 4);
-    ekf_.H_ << 1, 0, 0, 0,
-              0, 1, 0, 0;
 
+    // Update H
+    ekf_.H_ = H_laser_;
 
-
+    // Call laser update function
     ekf_.Update(measurement_pack.raw_measurements_);
 
   }
 
+  cout << " ******************************************* NEW STATE ******************************************** " << std::endl;
   // print the output
   cout << "x_ = " << ekf_.x_ << endl;
   cout << "P_ = " << ekf_.P_ << endl;

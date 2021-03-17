@@ -127,11 +127,12 @@ int main() {
 
           estimations.push_back(estimate);
 
-          // // Hazem:
-          // std::cout << "estimate= " << std::endl;
-          // std::cout << estimate << std::endl;
-          // std::cout << "gt_values= " << std::endl;
-          // std::cout << gt_values << std::endl;
+          // Hazem:
+          std::cout << " ******************************************* ESTIMATION VS GROUND TRUTH ******************************************** " << std::endl;
+          std::cout << "estimate= " << std::endl;
+          std::cout << estimate << std::endl;
+          std::cout << "gt_values= " << std::endl;
+          std::cout << gt_values << std::endl;
 
           VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
 
